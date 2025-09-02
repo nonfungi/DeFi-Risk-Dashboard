@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-import models # Import our SQLAlchemy models
+from . import models # Import our SQLAlchemy models
 
 def get_protocols(db: Session, skip: int = 0, limit: int = 100):
     """
