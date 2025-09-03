@@ -10,3 +10,9 @@ def get_protocols(db: Session, skip: int = 0, limit: int = 100):
     :param limit: The maximum number of records to return.
     """
     return db.query(models.Protocol).offset(skip).limit(limit).all()
+
+def get_protocol_by_id(db: Session, protocol_id: int):
+    """
+    Retrieve a single protocol by its ID.
+    """
+    return db.query(models.Protocol).filter(models.Protocol.id == protocol_id).first()

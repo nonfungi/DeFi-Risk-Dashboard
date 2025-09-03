@@ -1,12 +1,13 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
+
 # Import our custom modules
-import crud
-import models
-import schemas
-from database import SessionLocal, engine
+from . import crud
+from . import models
+from . import schemas
+from .database import SessionLocal, engine
 
 # This line is not strictly necessary since we use Alembic for migrations,
 # but it ensures tables are created on first run if they don't exist.
@@ -41,3 +42,14 @@ def read_protocols(skip: int = 0, limit: int = 100, db: Session = Depends(get_db
     """
     protocols = crud.get_protocols(db, skip=skip, limit=limit)
     return protocols
+
+@app.get("/protocols/{protocol_id}", response_model=schemas.Protocol, tags=["Protocols"])
+def read_protocol(protocol_id: int, db: Session = Depends(get_db)):
+    """
+    Retrieve a single protocol by its ID.
+    """
+    db_protocol = crud.get_protocol_by_id(db, protocol_id=protocol_id)
+    if db_protocol is None:
+        raise HTTPException(status_code=404, detail="Protocol not found")
+    return db_protocol
+
