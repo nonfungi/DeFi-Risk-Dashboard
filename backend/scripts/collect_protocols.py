@@ -4,58 +4,69 @@ from sqlalchemy import create_engine
 import sys
 import os
 
-# این بخش به اسکریپت ما اجازه می‌دهد که فایل‌های database و models را پیدا کند
-# دقیقاً همان کاری که در env.py انجام دادیم
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# This allows our script to find the 'database' and 'models' modules
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from database import SQLALCHEMY_DATABASE_URL
-from models import Protocol
+from backend.database import SQLALCHEMY_DATABASE_URL
+from backend.models import Protocol
 
-# ایجاد یک اتصال (Session) به پایگاه داده
+# Create a new session to the database
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 db = SessionLocal()
 
 def fetch_and_store_protocols():
     """
-    داده‌ها را از API DeFiLlama دریافت کرده و در پایگاه داده ذخیره می‌کند.
+    Fetches protocol data from the DeFiLlama API and stores/updates it in the database.
     """
     print("Fetching protocols from DeFiLlama API...")
-
-    # آدرس API برای دریافت لیست تمام پروتکل‌ها
     url = "https://api.llama.fi/protocols"
 
     try:
-        # ارسال درخواست به API
         response = requests.get(url)
-        response.raise_for_status()  # اگر خطایی رخ دهد (مثل 404 یا 500)، اینجا متوقف می‌شود
+        response.raise_for_status()  # Stop if there's an HTTP error
 
         protocols_data = response.json()
         print(f"Successfully fetched {len(protocols_data)} protocols.")
 
-        count = 0
+        new_protocols_count = 0
+        updated_protocols_count = 0
+
         for proto in protocols_data:
-            # بررسی اینکه آیا پروتکل از قبل در پایگاه داده وجود دارد یا نه
+            # Check if the protocol already exists in the database
             existing_protocol = db.query(Protocol).filter(Protocol.name == proto['name']).first()
 
-            if not existing_protocol:
-                # اگر وجود نداشت، یک رکورد جدید ایجاد کن
+            if existing_protocol:
+                # If it exists, update its fields
+                existing_protocol.category = proto.get('category', 'N/A')
+                existing_protocol.tvl = proto.get('tvl', 0)
+                existing_protocol.url = proto.get('url')
+                existing_protocol.logo = proto.get('logo')
+                existing_protocol.chains = proto.get('chains')
+                updated_protocols_count += 1
+            else:
+                # If it does not exist, create a new record
                 new_protocol = Protocol(
                     name=proto['name'],
-                    category=proto.get('category', 'N/A'), # اگر دسته‌بندی وجود نداشت، 'N/A' را قرار بده
-                    tvl=proto.get('tvl', 0) # اگر TVL وجود نداشت، 0 را قرار بده
+                    category=proto.get('category', 'N/A'),
+                    tvl=proto.get('tvl', 0),
+                    url=proto.get('url'),
+                    logo=proto.get('logo'),
+                    chains=proto.get('chains')
                 )
                 db.add(new_protocol)
-                count += 1
-
-        # ذخیره تمام تغییرات در پایگاه داده
+                new_protocols_count += 1
+        
+        # Commit all the changes to the database
         db.commit()
-        print(f"Successfully added {count} new protocols to the database.")
+        print(f"Successfully added {new_protocols_count} new protocols.")
+        print(f"Successfully updated {updated_protocols_count} existing protocols.")
 
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data from API: {e}")
+        db.rollback() # Rollback changes if an error occurs
     finally:
-        # بستن اتصال به پایگاه داده
+        # Close the database session
         db.close()
 
 if __name__ == "__main__":
