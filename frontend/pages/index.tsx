@@ -1,6 +1,4 @@
 import type { NextPage } from 'next';
-import type { NextPage } from 'next';
-import Head from 'next/head';
 import React, { useState, useMemo } from 'react';
 
 // --- Icon Components ---
@@ -44,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode }) => {
     <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm p-4 sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700">
       <div className="container mx-auto flex justify-between items-center">
         <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
-          داشبورد ریسک DeFi
+          DeFi Risk Dashboard
         </h1>
         <div className="flex items-center space-x-4">
             <button onClick={toggleDarkMode} className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white p-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors">
@@ -52,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode }) => {
             </button>
             <button className="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-300 shadow-lg shadow-blue-500/30">
               <WalletIcon />
-              <span>اتصال کیف پول</span>
+              <span>Connect Wallet</span>
             </button>
         </div>
       </div>
@@ -90,10 +88,10 @@ const mockProtocolData = {
     logo: 'https://placehold.co/40x40/7C3AED/FFFFFF?text=AV',
     overallRisk: 3.2,
     metrics: [
-      { name: 'ریسک قرارداد هوشمند', score: 2.5, description: 'امتیاز پایین‌تر به معنای ریسک کمتر است.' },
-      { name: 'ریسک نقدینگی', score: 1.8, description: 'نقدینگی بالا ریسک را کاهش می‌دهد.' },
-      { name: 'ریسک نوسانات بازار', score: 4.5, description: 'وابستگی بالا به نوسانات کلی بازار.' },
-      { name: 'ریسک متمرکزسازی', score: 3.1, description: 'میزان کنترل توسط تیم توسعه‌دهنده.' },
+      { name: 'Smart Contract Risk', score: 2.5, description: 'Lower score signifies lower risk.' },
+      { name: 'Liquidity Risk', score: 1.8, description: 'High liquidity mitigates risk.' },
+      { name: 'Market Volatility Risk', score: 4.5, description: 'High dependency on market-wide fluctuations.' },
+      { name: 'Centralization Risk', score: 3.1, description: 'Degree of control held by the core team.' },
     ],
   },
   'compound-v2': {
@@ -101,10 +99,10 @@ const mockProtocolData = {
     logo: 'https://placehold.co/40x40/22C55E/FFFFFF?text=CP',
     overallRisk: 4.1,
     metrics: [
-      { name: 'ریسک قرارداد هوشمند', score: 3.0, description: 'کدبیس قدیمی‌تر با چندین بازبینی.' },
-      { name: 'ریسک نقدینگی', score: 2.2, description: 'نقدینگی قوی در استخرهای اصلی.' },
-      { name: 'ریسک نوسانات بازار', score: 5.0, description: 'بسیار حساس به افت قیمت ETH.' },
-      { name: 'ریسک متمرکزسازی', score: 4.8, description: 'کلیدهای مدیریتی با کنترل قابل توجه.' },
+      { name: 'Smart Contract Risk', score: 3.0, description: 'Older codebase with multiple audits.' },
+      { name: 'Liquidity Risk', score: 2.2, description: 'Strong liquidity in major pools.' },
+      { name: 'Market Volatility Risk', score: 5.0, description: 'Very sensitive to ETH price drops.' },
+      { name: 'Centralization Risk', score: 4.8, description: 'Admin keys hold significant control.' },
     ],
   },
   'uniswap-v3': {
@@ -112,10 +110,10 @@ const mockProtocolData = {
     logo: 'https://placehold.co/40x40/EC4899/FFFFFF?text=UN',
     overallRisk: 2.8,
     metrics: [
-      { name: 'ریسک قرارداد هوشمند', score: 2.1, description: 'قراردادهای پیچیده اما به خوبی بازبینی شده.' },
-      { name: 'ریسک نقدینگی', score: 4.0, description: 'ریسک نقدینگی متمرکز در برخی بازه‌ها.' },
-      { name: 'ریسک نوسانات بازار', score: 3.5, description: 'ضرر ناپایدار یک ریسک کلیدی است.' },
-      { name: 'ریسک متمرکزسازی', score: 1.5, description: 'کاملاً غیرمتمرکز با حاکمیت قوی.' },
+      { name: 'Smart Contract Risk', score: 2.1, description: 'Complex but well-audited contracts.' },
+      { name: 'Liquidity Risk', score: 4.0, description: 'Risk of concentrated liquidity in certain ranges.' },
+      { name: 'Market Volatility Risk', score: 3.5, description: 'Impermanent loss is a key risk factor.' },
+      { name: 'Centralization Risk', score: 1.5, description: 'Highly decentralized with strong governance.' },
     ],
   },
 };
@@ -136,7 +134,7 @@ const Dashboard: React.FC = () => {
   return (
     <>
       <div className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">یک پروتکل را برای تحلیل انتخاب کنید</h2>
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Select a protocol to analyze</h2>
         <div className="flex flex-wrap gap-4">
           {Object.keys(mockProtocolData).map((key) => (
             <button
@@ -162,7 +160,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div className={`px-4 py-2 rounded-lg border text-center ${getOverallRiskColor(protocol.overallRisk)}`}>
             <span className="font-bold text-lg">{protocol.overallRisk.toFixed(1)}</span>
-            <span className="text-sm ml-2">امتیاز ریسک کلی</span>
+            <span className="text-sm ml-2">Overall Risk Score</span>
           </div>
         </div>
         
@@ -185,15 +183,19 @@ const Home: NextPage = () => {
     setIsDarkMode(!isDarkMode);
   };
 
+  // This effect hook handles adding/removing the 'dark' class on the HTML element
+  React.useEffect(() => {
+    const htmlElement = document.documentElement;
+    if (isDarkMode) {
+      htmlElement.classList.add('dark');
+    } else {
+      htmlElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
   return (
     <div className={isDarkMode ? 'dark' : ''}>
       <div className="bg-gray-100 dark:bg-gray-900 text-black dark:text-white min-h-screen font-sans transition-colors duration-300">
-        <Head>
-          <title>DeFi Risk Dashboard</title>
-          <meta name="description" content="A dashboard to analyze risks in DeFi protocols" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-
         <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
         
         <main className="container mx-auto p-4 md:p-8">
@@ -201,8 +203,8 @@ const Home: NextPage = () => {
         </main>
 
         <footer className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
-            <p>این داده‌ها صرفاً جهت نمایش است و نباید به عنوان مشاوره مالی در نظر گرفته شود.</p>
-            <p>&copy; 2025 DeFi Risk Dashboard</p>
+            <p>This data is for demonstration purposes only and should not be considered financial advice.</p>
+            <p>&copy; {new Date().getFullYear()} DeFi Risk Dashboard</p>
         </footer>
       </div>
     </div>
